@@ -1,6 +1,10 @@
 # using class
 # Importing custome ttk
+from tkinter import StringVar
 import customtkinter as cttk
+
+from Dashboard import Dashboard
+
 
 
 
@@ -11,6 +15,8 @@ class LoginSystem:
         self.root.geometry("700x600+350+50")
         self.root.resizable(False, False)
         # self.root.config(bg="#c8c7ff")
+
+        self.username = StringVar()
 
         cttk.set_appearance_mode("light")  # Modes: system (default), light, dark
         cttk.set_default_color_theme("blue")  # Themes: blue (default), dark-blue, green
@@ -35,7 +41,7 @@ class LoginSystem:
 
         #--For Username
         lbl_username  = cttk.CTkLabel(LoginFrame, text="Username", font=("Arial",14,"bold")).place(x=120, y=150)
-        txt_username = cttk.CTkEntry(LoginFrame, placeholder_text="username", fg_color="transparent", text_color=("black","white"), width=200, height=30)
+        txt_username = cttk.CTkEntry(LoginFrame,textvariable=self.username, placeholder_text="username", fg_color="transparent", text_color=("black","white"), width=200, height=30)
         txt_username.place(x=120, y=175)
 
         #--For Password
@@ -43,14 +49,9 @@ class LoginSystem:
         txt_password = cttk.CTkEntry(LoginFrame, placeholder_text="Password", fg_color="transparent", text_color=("black","white"), width=200, height=30, show="*")
         txt_password.place(x=120, y=235)
 
-        #--For Login Button
-        def button_event():
-            print(f"username: {txt_username.get()}")
-            print(f"password: {txt_password.get()}")
-            print("button pressed")
+        btn_login = cttk.CTkButton(LoginFrame, text="Login", font=("Arial",14,"bold"),command=self.button_event, height=35, corner_radius=20)
+        btn_login.place(x=120, y=285)
 
-
-        btn_login = cttk.CTkButton(LoginFrame, text="Login", font=("Arial",14,"bold"),command=button_event, height=35, corner_radius=20).place(x=120, y=285)
 
         #--Light and Dark Theme button
         switch_var = cttk.StringVar(value="off")
@@ -58,6 +59,15 @@ class LoginSystem:
                                  variable=switch_var, onvalue="on", offvalue="off")
         switch.place(x=120, y=350)
 
+    #--For Login Button
+    def button_event(self):
+        # self.userName = self.username.get()
+        self.root.destroy()
+        # import Dashboard
+        # print("button pressed")
+        root = cttk.CTk()
+        dashboard_obj = Dashboard(root,self.username.get())
+        root.mainloop()
 
 root = cttk.CTk()
 obj = LoginSystem(root)
