@@ -13,6 +13,9 @@ class Dashboard:
         username_label = cttk.CTkLabel(root, text=f"Welcome, {self.user}!", font=("Arial", 16, "bold"))
         username_label.pack(pady=20)
 
+
+
+        # Logout 
         btn_logout = cttk.CTkButton(root, text="Logout", font=("Arial",14,"bold"),command=self.logout, height=35, corner_radius=20)
         btn_logout.place(x=120, y=285)
 
@@ -22,6 +25,7 @@ class Dashboard:
     #  import LoginPage
      os.system("python LoginPage.py") #better to use this
      print("logout")
+    
     
 # # Usage example
 # root = cttk.CTk()
