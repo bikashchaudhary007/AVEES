@@ -8,6 +8,8 @@ import serial
 import threading
 import time
 
+
+
 class Dashboard:
     def __init__(self, root, user):
         # serial_port = 'COM5'
@@ -17,8 +19,10 @@ class Dashboard:
         self.root.resizable(False, False)
         self.user = user
         self.arduino = None  # Initialize self.arduino to None
-        # self.toplevel_window = None  # Initialize toplevel_window attribute
-        # self.arduino = serial.Serial(serial_port, 9600)
+        self.db_conn = None  # Initialize db_conn to None
+        self.lbl_noOfVehicleEntered =None
+
+
 
         # Connect to MySQL database
         self.db_conn = mysql.connector.connect(
@@ -41,6 +45,27 @@ class Dashboard:
         self.dashboard_frame = cttk.CTkFrame(root, width=850, height=450, fg_color=("white", "#4B49AC"))
         self.settings_frame = cttk.CTkFrame(root, width=850, height=450, fg_color=("white", "#4B49AC"))
         self.components_frame = cttk.CTkFrame(root, width=850, height=450, fg_color=("white", "#4B49AC"))
+
+         # Dashboard Inside Widgets
+        #No of Vehicles Entered
+        self.vehicle_entered_frame = cttk.CTkFrame(self.dashboard_frame, width=250, height=100,fg_color=("green", "#4B49AC"))
+        self.vehicle_entered_frame.place(x=30,y=50)
+
+        # Corrected initialization of lbl_noOfVehicleEntered
+        self.lbl_noOfVehicleEntered = cttk.CTkLabel(
+            self.vehicle_entered_frame,
+            text="Total Vehicles: 0",
+            font=("Arial", 18, "bold"),
+            fg_color=("green", "#4B49AC")
+        )
+        self.lbl_noOfVehicleEntered.place(x=70,y=20)
+
+        # Initialize the total number of vehicles label
+        self.update_total_vehicles_label()
+
+        
+
+
 
         # Initial frame to show is the dashboard frame
         self.current_frame = self.dashboard_frame
@@ -82,7 +107,7 @@ class Dashboard:
         btn_logout.place(x=10, y=285)
 
 
-        # Registration
+        # -----------------------------Registration--------------------------------------------
         # Labels
         lbl_vehicle_name = cttk.CTkLabel(self.settings_frame, text="Vehicle Name:")
         lbl_vehicle_no = cttk.CTkLabel(self.settings_frame, text="Vehicle Number:")
@@ -127,7 +152,10 @@ class Dashboard:
 
         btn_scan_rfid.place(x=50,y=360)
         btn_register.place(x=200,y=360)
+    #---------------------------------------------------------------------------------------
 
+
+    
     
 
     def show_frame(self, frame=None):
@@ -145,8 +173,14 @@ class Dashboard:
             # Update the current frame to the selected frame
             self.current_frame = frame
 
+            
+
         # Show the selected frame
         self.current_frame.place(x=280, y=50)
+        # Update the total number of vehicles when switching to the dashboard frame
+        if frame == self.dashboard_frame:
+            self.update_total_vehicles_label()
+
 
 
 
@@ -251,6 +285,25 @@ class Dashboard:
         # Add logic for handling the system button click
         # For example, stop the RFID scanning thread
         self.stop_rfid_scan_thread()
+    
+
+    def update_total_vehicles_label(self):
+        try:
+            with self.db_conn.cursor() as cursor:
+                # Perform a query to get the total number of vehicles
+                cursor.execute("SELECT COUNT(*) FROM vehicledetails")
+                result = cursor.fetchone()
+                total_vehicles = result[0] if result else 0
+                print(total_vehicles)
+
+                # Update the label
+                self.lbl_noOfVehicleEntered.configure(text=f"Total Vehicles: {total_vehicles}")
+
+        except Exception as e:
+            print(f"Error updating total vehicles label: {str(e)}")
+
+
+    
     
 
     def registerVehicle(self):
