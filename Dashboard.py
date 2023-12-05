@@ -4,7 +4,7 @@ import tkinter as tk
 from tkinter import messagebox
 import mysql.connector
 import serial
-
+import tkinter.ttk as ttk
 import threading
 import time
 
@@ -48,7 +48,7 @@ class Dashboard:
 
          # Dashboard Inside Widgets
         #No of Vehicles Entered
-        self.vehicle_entered_frame = cttk.CTkFrame(self.dashboard_frame, width=250, height=100,fg_color=("green", "#4B49AC"))
+        self.vehicle_entered_frame = cttk.CTkFrame(self.dashboard_frame, width=250, height=100,fg_color=("#4B49AC", "white"))
         self.vehicle_entered_frame.place(x=30,y=50)
 
         # Corrected initialization of lbl_noOfVehicleEntered
@@ -56,12 +56,31 @@ class Dashboard:
             self.vehicle_entered_frame,
             text="Total Vehicles: 0",
             font=("Arial", 18, "bold"),
-            fg_color=("green", "#4B49AC")
+            fg_color=("#4B49AC", "white")
         )
         self.lbl_noOfVehicleEntered.place(x=70,y=20)
 
         # Initialize the total number of vehicles label
         self.update_total_vehicles_label()
+
+        # Vehicle List Frame
+        self.vehicle_list_frame = cttk.CTkFrame(self.dashboard_frame, width=600, height=250, fg_color=("red", "#4B49AC"))
+        self.vehicle_list_frame.place(x=70, y=170)
+
+        # Treeview to display vehicle list
+        columns = ("Vehicle No", "Entry Time")
+        self.treeview = ttk.Treeview(self.vehicle_list_frame, columns=columns, show="headings", selectmode="browse", height=15)
+        self.treeview.place(x=10, y=10)
+
+        # Configure column headings
+        for col in columns:
+            self.treeview.heading(col, text=col)
+            self.treeview.column(col, width=150, anchor="center")
+
+        
+        # Function to update vehicle list information
+        self.update_vehicle_list()
+
 
         
 
@@ -299,8 +318,32 @@ class Dashboard:
                 # Update the label
                 self.lbl_noOfVehicleEntered.configure(text=f"Total Vehicles: {total_vehicles}")
 
+                # Update the vehicle list information
+                self.update_vehicle_list()
+
         except Exception as e:
             print(f"Error updating total vehicles label: {str(e)}")
+
+        
+
+    # Function to update vehicle list information
+    def update_vehicle_list(self):
+        try:
+            with self.db_conn.cursor() as cursor:
+                # Perform a query to get vehicle information
+                cursor.execute("SELECT Tag_id, Entry_Time FROM vehicledetails")
+                results = cursor.fetchall()
+
+                # Clear existing items in the treeview
+                for item in self.treeview.get_children():
+                    self.treeview.delete(item)
+
+                # Insert new data into the treeview
+                for row in results:
+                    self.treeview.insert("", "end", values=row)
+
+        except Exception as e:
+            print(f"Error updating vehicle list: {str(e)}")
 
 
     
