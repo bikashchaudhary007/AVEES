@@ -2,13 +2,12 @@
 # Importing custome ttk
 from tkinter import StringVar
 import customtkinter as cttk
-
 from Dashboard import Dashboard
 import threading
 import serial
 import mysql.connector
 
-serial_port = 'COM5'
+
 db_conn = mysql.connector.connect(
     host="localhost",
     user="root",
@@ -18,6 +17,9 @@ db_conn = mysql.connector.connect(
 
 
 class LoginSystem:
+    # Define serial_port as a class attribute
+    serial_port = 'COM5'
+
     def __init__(self,root):
         self.root = root
         self.root.title("Login Page")
@@ -73,7 +75,7 @@ class LoginSystem:
     def button_event(self):
         # self.userName = self.username.get()
         self.root.destroy()
-        self.scan_rfid();
+        self.scan_rfid_onbackground();
         # import Dashboard
         # print("button pressed")
         root = cttk.CTk()
@@ -85,8 +87,8 @@ class LoginSystem:
         self.root.iconify()
 
         # Start RFID scanning in a separate thread
-        rfid_thread = threading.Thread(target=self.scan_rfid)
-        rfid_thread.start()
+        # rfid_thread = threading.Thread(target=self.scan_rfid_onbackground)
+        # rfid_thread.start()
 
         # Create and show the Dashboard window
         dashboard_root = cttk.CTk()
@@ -99,8 +101,7 @@ class LoginSystem:
         self.root.deiconify()
 
     
-
-    def scan_rfid(self):
+    def scan_rfid_onbackground(self):
         try:
             arduino = serial.Serial(serial_port, 9600)
         except Exception as e:
@@ -131,7 +132,6 @@ class LoginSystem:
 
             except Exception as e:
                 print(f"Error processing data: {str(e)}")
-
 
 
 root = cttk.CTk()
