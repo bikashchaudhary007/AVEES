@@ -70,6 +70,7 @@ class LoginSystem:
                                  variable=switch_var, onvalue="on", offvalue="off")
         switch.place(x=120, y=350)
 
+   
     def button_event(self):
         # Hide the login window
         self.root.iconify()

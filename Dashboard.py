@@ -73,16 +73,17 @@ class Dashboard:
         self.treeview = ttk.Treeview(self.vehicle_list_frame, columns=columns, show="headings", selectmode="browse", height=15)
         self.treeview.place(x=10, y=10)
 
-        # Configure column headings
-        for col in columns:
-            self.treeview.heading(col, text=col)
-            self.treeview.column(col, width=150, anchor="center")
 
         
+        # Configure column headings
+        for col in columns:
+            self.treeview.heading(col, text=col, anchor="center", command=lambda c=col: self.sort_treeview(c))
+            self.treeview.column(col, width=150, anchor="center")
+            # self.treeview.heading(col, text=col)
+            # self.treeview.column(col, width=150, anchor="center")
+               
         # Function to update vehicle list information
         self.update_vehicle_list()
-
-
 
 
         # Initial frame to show is the dashboard frame
@@ -198,6 +199,9 @@ class Dashboard:
         # Update the total number of vehicles when switching to the dashboard frame
         if frame == self.dashboard_frame:
             self.update_total_vehicles_label()
+
+            # Refresh the treeview to apply the font changes
+            self.treeview.update_idletasks()
 
 
 
@@ -332,7 +336,7 @@ class Dashboard:
         try:
             with self.db_conn.cursor() as cursor:
                 # Perform a query to get vehicle information
-                cursor.execute("SELECT Tag_id, Entry_Time FROM vehicledetails")
+                cursor.execute("SELECT Tag_id, Entry_Time FROM vehicledetails order by Id DESC LIMIT 10")
                 results = cursor.fetchall()
 
                 # Clear existing items in the treeview
