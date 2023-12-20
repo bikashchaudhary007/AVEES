@@ -70,25 +70,9 @@ class LoginSystem:
                                  variable=switch_var, onvalue="on", offvalue="off")
         switch.place(x=120, y=350)
 
-    '''
-    #--For Login Button
-    def button_event(self):
-        # self.userName = self.username.get()
-        self.root.destroy()
-        self.scan_rfid_onbackground();
-        # import Dashboard
-        # print("button pressed")
-        root = cttk.CTk()
-        dashboard_obj = Dashboard(root,self.username.get())
-        root.mainloop()
-    '''
     def button_event(self):
         # Hide the login window
         self.root.iconify()
-
-        # Start RFID scanning in a separate thread
-        # rfid_thread = threading.Thread(target=self.scan_rfid_onbackground)
-        # rfid_thread.start()
 
         # Create and show the Dashboard window
         dashboard_root = cttk.CTk()
@@ -99,39 +83,6 @@ class LoginSystem:
     def on_dashboard_close(self):
         # Deiconify the login window when the Dashboard is closed
         self.root.deiconify()
-
-    
-    def scan_rfid_onbackground(self):
-        try:
-            arduino = serial.Serial(serial_port, 9600)
-        except Exception as e:
-            print(f"Failed to connect on {serial_port}: {str(e)}")
-
-        while True:
-            try:
-                data = arduino.readline().decode().strip()
-                if data.startswith("Card detected:"):
-                    card_id = data[len("Card detected:"):].strip().replace(" ", "")
-
-                    # Check if the card ID is registered in the database
-                    with db_conn.cursor() as cursor:
-                        cursor.execute("SELECT * FROM regvehicle WHERE Tag_id = %s", (card_id,))
-                        result = cursor.fetchone()
-
-                    if result:
-                        # Card ID is registered, record attendance
-                        with db_conn.cursor() as cursor:
-                            cursor.execute(
-                                "INSERT INTO vehicledetails (Tag_id, Entry_Time) VALUES (%s, NOW())",
-                                (card_id,)
-                            )
-                            db_conn.commit()
-                            print(f"Entry recorded for card ID: {card_id}")
-                    else:
-                        print("Need To Register card")
-
-            except Exception as e:
-                print(f"Error processing data: {str(e)}")
 
 
 root = cttk.CTk()

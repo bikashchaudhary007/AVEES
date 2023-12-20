@@ -21,6 +21,7 @@ class Dashboard:
         self.arduino = None  # Initialize self.arduino to None
         self.db_conn = None  # Initialize db_conn to None
         self.lbl_noOfVehicleEntered =None
+        # self.treeview = None
 
 
 
@@ -81,8 +82,6 @@ class Dashboard:
         # Function to update vehicle list information
         self.update_vehicle_list()
 
-
-        
 
 
 
@@ -147,7 +146,7 @@ class Dashboard:
         # Register Button
         btn_register = cttk.CTkButton(self.settings_frame, text="Register", command=self.register_vehicle)
 
-        # Layout using grid
+        # Layout 
         lbl_vehicle_name.place(x=50,y=100)
         lbl_vehicle_no.place(x=50,y=140)
         lbl_vehicle_owner.place(x=50,y=180)
@@ -212,6 +211,7 @@ class Dashboard:
                 return
 
         try:
+            print("Reading: ")
             data = self.arduino.readline().decode().strip()
             if data.startswith("Card detected:"):
                 card_id = data[len("Card detected:"):].strip().replace(" ", "")
@@ -260,6 +260,7 @@ class Dashboard:
 
         while self.rfid_scan_flag:
             try:
+                print("Reading: ")
                 data = self.arduino.readline().decode().strip()
                 if data.startswith("Card detected:"):
                     card_id = data[len("Card detected:"):].strip().replace(" ", "")
@@ -353,17 +354,29 @@ class Dashboard:
         self.root.destroy()
         #  import LoginPage
         os.system("python RegisterVehicle.py") #better to use this
+
+    
+    def stop_system(self):
+        # Set the flag to stop the RFID scanning thread
+        self.rfid_scan_flag = False
+
+        # Wait for the thread to finish before continuing
+        if self.rfid_thread.is_alive():
+            self.rfid_thread.join()
+
+        # Close the serial connection if it's open
+        if self.arduino and self.arduino.is_open:
+            self.arduino.close()
     
 
 
     def logout(self):
+        # Stop the system and clean up resources
+        self.stop_system()
+
         self.root.destroy()
         #  import LoginPage
         os.system("python LoginPage2.py") #better to use this
         print("logout")
 
 
-# Usage example
-# root = cttk.CTk()
-# dashboard_obj = Dashboard(root, "Username")
-# root.mainloop()

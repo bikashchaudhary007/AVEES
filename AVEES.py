@@ -16,6 +16,7 @@ except Exception as e:
 
 while True:
     try:
+        print("Reading: ")
         data = arduino.readline().decode().strip()
         if data.startswith("Card detected:"):
             card_id = data[len("Card detected:"):].strip().replace(" ", "")
