@@ -3,7 +3,7 @@
 from tkinter import StringVar
 import customtkinter as cttk
 
-from Dashboard import Dashboard
+from TestDashboard import Dashboard
 
 
 
@@ -69,9 +69,7 @@ class LoginSystem:
         root = cttk.CTk()
         dashboard_obj = Dashboard(root,self.username.get())
         root.mainloop()
-    
-    
-
+        
 root = cttk.CTk()
 obj = LoginSystem(root)
 root.mainloop()
