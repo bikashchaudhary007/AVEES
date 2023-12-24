@@ -1,6 +1,7 @@
 # using class
 # Importing custome ttk
 from tkinter import StringVar
+from tkinter import messagebox
 import customtkinter as cttk
 from Dashboard import Dashboard
 import threading
@@ -28,6 +29,7 @@ class LoginSystem:
         # self.root.config(bg="#c8c7ff")
 
         self.username = StringVar()
+        self.password = StringVar()
 
         cttk.set_appearance_mode("light")  # Modes: system (default), light, dark
         cttk.set_default_color_theme("blue")  # Themes: blue (default), dark-blue, green
@@ -57,7 +59,7 @@ class LoginSystem:
 
         #--For Password
         lbl_password  = cttk.CTkLabel(LoginFrame, text="Password", font=("Arial",14,"bold")).place(x=120, y=210)
-        txt_password = cttk.CTkEntry(LoginFrame, placeholder_text="Password", fg_color="transparent", text_color=("black","white"), width=200, height=30, show="*")
+        txt_password = cttk.CTkEntry(LoginFrame, textvariable=self.password,placeholder_text="Password", fg_color="transparent", text_color=("black","white"), width=200, height=30, show="*")
         txt_password.place(x=120, y=235)
 
         btn_login = cttk.CTkButton(LoginFrame, text="Login", font=("Arial",14,"bold"),command=self.button_event, height=35, corner_radius=20)
@@ -72,18 +74,49 @@ class LoginSystem:
 
    
     def button_event(self):
-        # Hide the login window
-        self.root.iconify()
-
-        # Create and show the Dashboard window
-        dashboard_root = cttk.CTk()
-        dashboard_obj = Dashboard(dashboard_root, self.username.get())
-        dashboard_root.protocol("WM_DELETE_WINDOW", self.on_dashboard_close)  # handle close event
-        dashboard_root.mainloop()
+        # Check username and password
+        if self.validate_login(self.username.get(), self.password.get()):
+            # Show successful login message
+            messagebox.showinfo("Login Successful", "Welcome!")
+            # If login is successful, hide the login window
+            self.root.iconify()
+            # Create and show the Dashboard window
+            dashboard_root = cttk.CTk()
+            dashboard_obj = Dashboard(dashboard_root, self.username.get())
+            dashboard_root.protocol("WM_DELETE_WINDOW", self.on_dashboard_close)  # handle close event
+            dashboard_root.mainloop()
+            
+        else:
+            # If login fails, show an error message or handle accordingly
+            messagebox.showerror("Login Failed", "Invalid credentials. Please try again.")
+            # If login fails, show an error message or handle accordingly
+            print("Invalid credentials. Please try again.")
     
     def on_dashboard_close(self):
         # Deiconify the login window when the Dashboard is closed
         self.root.deiconify()
+    
+
+    def validate_login(self, username, password):
+        try:
+            cursor = db_conn.cursor()
+
+            # Query to check if the provided username and password exist in the database
+            query = "SELECT * FROM user WHERE username = %s AND pwd = %s"
+            cursor.execute(query, (username, password))
+            user = cursor.fetchone()
+
+            if user:
+                # If user exists with provided credentials
+                return True
+            else:
+                # If user doesn't exist or credentials are incorrect
+                return False
+        except mysql.connector.Error as err:
+            print(f"Error: {err}")
+            return False
+        finally:
+            cursor.close()
 
 
 root = cttk.CTk()
