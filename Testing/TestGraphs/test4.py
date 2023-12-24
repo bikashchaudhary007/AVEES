@@ -82,7 +82,7 @@ class VehicleCountApp:
         for widget in self.graph_frame.winfo_children():
             widget.destroy()
 
-        fig, ax = plt.subplots(figsize=(4, 5))
+        fig, ax = plt.subplots(figsize=(5, 4))
         bars = ax.bar(x_data, y_data, color='skyblue')
 
         ax.set_xlabel('Date', fontsize=12)

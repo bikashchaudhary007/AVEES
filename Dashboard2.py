@@ -7,6 +7,10 @@ import serial
 import tkinter.ttk as ttk
 import threading
 import time
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import matplotlib.pyplot as plt
+from tkcalendar import DateEntry
+from datetime import datetime, date
 
 
 
@@ -21,6 +25,7 @@ class Dashboard:
         self.arduino = None  # Initialize self.arduino to None
         self.db_conn = None  # Initialize db_conn to None
         self.lbl_noOfVehicleEntered =None
+        self.lbl_noOfVehicleExit = None
         # self.treeview = None
 
 
@@ -43,11 +48,11 @@ class Dashboard:
     
 
         # Create frames for dashboard, settings, and components
-        self.dashboard_frame = cttk.CTkFrame(root, width=850, height=450, fg_color=("white", "#4B49AC"))
+        self.dashboard_frame = cttk.CTkFrame(root, width=850, height=650, fg_color=("white", "#4B49AC"))
         self.settings_frame = cttk.CTkFrame(root, width=850, height=450, fg_color=("white", "#4B49AC"))
         self.components_frame = cttk.CTkFrame(root, width=850, height=450, fg_color=("white", "#4B49AC"))
 
-         # Dashboard Inside Widgets
+        # ----------------Dashboard Inside Widgets-----------------------------------
         #No of Vehicles Entered
         self.vehicle_entered_frame = cttk.CTkFrame(self.dashboard_frame, width=250, height=100,fg_color=("#4B49AC", "white"))
         self.vehicle_entered_frame.place(x=30,y=50)
@@ -64,8 +69,26 @@ class Dashboard:
         # Initialize the total number of vehicles label
         self.update_total_vehicles_label()
 
+
+        #No of Vehicles Exit
+        self.vehicle_exit_frame = cttk.CTkFrame(self.dashboard_frame, width=250, height=100,fg_color=("#98BDFF", "white"))
+        self.vehicle_exit_frame.place(x=300,y=50)
+
+        self.lbl_noOfVehicleExit = cttk.CTkLabel(
+            self.vehicle_exit_frame,
+            text="Total Vehicles Exit: 0",
+            font=("Arial", 18, "bold"),
+            fg_color=("#98BDFF", "white")
+        )
+        self.lbl_noOfVehicleExit.place(x=70,y=20)
+
+        self.update_total_vehicles_exit_label()
+
+
+
+
         # Vehicle List Frame
-        self.vehicle_list_frame = cttk.CTkFrame(self.dashboard_frame, width=600, height=250, fg_color=("red", "#4B49AC"))
+        self.vehicle_list_frame = cttk.CTkFrame(self.components_frame, width=600, height=250, fg_color=("red", "#4B49AC"))
         self.vehicle_list_frame.place(x=70, y=170)
 
         # Treeview to display vehicle list
@@ -116,9 +139,9 @@ class Dashboard:
                                         command=lambda: self.show_frame(self.components_frame))
         btn_components.place(x=10, y=140)
 
-        # Register Vehicle
-        btn_components = cttk.CTkButton(SideMenuFrame, text="Register", font=("Arial", 14, "bold"), height=35, width=180, command=self.registerVehicle)
-        btn_components.place(x=10, y=180)
+        # # Register Vehicle
+        # btn_components = cttk.CTkButton(SideMenuFrame, text="Register", font=("Arial", 14, "bold"), height=35, width=180, command=self.registerVehicle)
+        # btn_components.place(x=10, y=180)
 
         # Logout
         btn_logout = cttk.CTkButton(SideMenuFrame, text="Logout", font=("Arial", 14, "bold"), command=self.logout,
@@ -172,10 +195,110 @@ class Dashboard:
         btn_scan_rfid.place(x=50,y=360)
         btn_register.place(x=200,y=360)
     #---------------------------------------------------------------------------------------
+        
+
+    #-------------Graphs-------------------------------------------
+        
+        style = ttk.Style()
+        style.configure('TButton', font=('Arial', 12))
+
+        
 
 
-    
-    
+        self.filter_frame = ttk.Frame(self.dashboard_frame,width=650, height=50)
+        self.filter_frame.place(x=70,y=180)
+
+        self.current_month_start, self.current_month_end = self.get_current_month_dates()
+
+        self.entry_from_date = DateEntry(self.filter_frame, width=12, background='darkblue', foreground='white', borderwidth=2)
+        self.entry_from_date.grid(row=0, column=1, padx=5, pady=5)
+        self.entry_from_date.set_date(self.current_month_start.strftime('%m/%d/%y'))
+
+        self.entry_to_date = DateEntry(self.filter_frame, width=12, background='darkblue', foreground='white', borderwidth=2)
+        self.entry_to_date.grid(row=0, column=3, padx=5, pady=5)
+        self.entry_to_date.set_date(self.current_month_end.strftime('%m/%d/%y'))
+
+        self.label_from_date = ttk.Label(self.filter_frame, text='From Date:')
+        self.label_from_date.grid(row=0, column=0, padx=5, pady=5)
+
+        self.label_to_date = ttk.Label(self.filter_frame, text='To Date:')
+        self.label_to_date.grid(row=0, column=2, padx=5, pady=5)
+
+        self.graph_frame = ttk.Frame(self.dashboard_frame, width=650, height=650)
+        self.graph_frame.place(x=40,y=210)
+
+        self.plot_vehicle_count(self.current_month_start, self.current_month_end)
+
+        self.entry_from_date.bind("<<DateEntrySelected>>", self.update_graph)
+        self.entry_to_date.bind("<<DateEntrySelected>>", self.update_graph)
+
+    def get_current_month_dates(self):
+        today = date.today()
+        first_day = today.replace(day=1)
+        last_day = today.replace(day=28)
+        last_day = last_day.replace(day=max(min(31, last_day.day), 29))
+        return first_day, last_day
+
+    def plot_vehicle_count(self, from_date, to_date):
+        from_date_str = from_date.strftime('%m/%d/%y')
+        to_date_str = to_date.strftime('%m/%d/%y')
+
+        from_date_formatted = from_date.strftime('%Y-%m-%d')
+        to_date_formatted = to_date.strftime('%Y-%m-%d')
+
+        connection = mysql.connector.connect(
+            host='localhost',
+            user='root',
+            password='',
+            database='aveesdb'
+        )
+
+        cursor = connection.cursor()
+
+        query = "SELECT DATE_FORMAT(Entry_Time, '%Y-%m-%d') AS Entry_Date, COUNT(*) AS Vehicle_Count FROM vehicledetails WHERE Entry_Time BETWEEN %s AND %s GROUP BY Entry_Date"
+        cursor.execute(query, (from_date_formatted, to_date_formatted))
+
+        rows = cursor.fetchall()
+
+        cursor.close()
+        connection.close()
+
+        x_data = [row[0] for row in rows]
+        y_data = [row[1] for row in rows]
+
+        # Clear previous plot data
+        for widget in self.graph_frame.winfo_children():
+            widget.destroy()
+
+        fig, ax = plt.subplots(figsize=(7, 4))
+        bars = ax.bar(x_data, y_data, color='skyblue')
+
+        ax.set_xlabel('Date', fontsize=12)
+        ax.set_ylabel('Number of Vehicles', fontsize=12)
+        ax.set_title('Number of Vehicles Entered on Different Days', fontsize=14)
+        ax.set_xticklabels(x_data, rotation=0)
+
+        ax.set_facecolor('lightgray')
+
+        for bar, count in zip(bars, y_data):
+            ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), count,
+                    ha='center', va='bottom', color='black', fontsize=10)
+
+        canvas = FigureCanvasTkAgg(fig, master=self.graph_frame)
+        canvas.draw()
+        canvas.get_tk_widget().place(x=0,y=0)
+
+        print("From Date:", from_date_formatted)
+        print("To Date:", to_date_formatted)
+        print("Query Executed Successfully")
+        print("Rows Fetched:", rows)
+
+    def update_graph(self, event):
+        from_date = datetime.strptime(self.entry_from_date.get(), '%m/%d/%y')
+        to_date = datetime.strptime(self.entry_to_date.get(), '%m/%d/%y')
+        self.plot_vehicle_count(from_date, to_date)
+        #-----------x--------Graphs--------------------------------------
+
 
     def show_frame(self, frame=None):
         if frame:
@@ -199,6 +322,7 @@ class Dashboard:
         # Update the total number of vehicles when switching to the dashboard frame
         if frame == self.dashboard_frame:
             self.update_total_vehicles_label()
+            self.update_total_vehicles_exit_label()
 
             # Refresh the treeview to apply the font changes
             self.treeview.update_idletasks()
@@ -315,13 +439,42 @@ class Dashboard:
         try:
             with self.db_conn.cursor() as cursor:
                 # Perform a query to get the total number of vehicles
-                cursor.execute("SELECT COUNT(*) FROM vehicledetails")
+                # cursor.execute("SELECT COUNT(*) FROM vehicledetails")
+                cursor.execute('''SELECT COUNT(*) AS OddRowCount FROM (
+                                SELECT (@row_number:=@row_number + 1) AS row_num
+                                FROM vehicledetails, (SELECT @row_number:=0) AS t
+                            ) AS numbered_rows
+                            WHERE row_num % 2 != 0''')
                 result = cursor.fetchone()
                 total_vehicles = result[0] if result else 0
                 print(total_vehicles)
 
                 # Update the label
                 self.lbl_noOfVehicleEntered.configure(text=f"Total Vehicles: {total_vehicles}")
+
+                # Update the vehicle list information
+                self.update_vehicle_list()
+
+        except Exception as e:
+            print(f"Error updating total vehicles label: {str(e)}")
+    
+    #Exit Vehicles
+    def update_total_vehicles_exit_label(self):
+        try:
+            with self.db_conn.cursor() as cursor:
+                # Perform a query to get the total number of vehicles
+                # cursor.execute("SELECT COUNT(*) FROM vehicledetails")
+                cursor.execute('''SELECT COUNT(*) AS OddRowCount FROM (
+                                SELECT (@row_number:=@row_number + 1) AS row_num
+                                FROM vehicledetails, (SELECT @row_number:=0) AS t
+                            ) AS numbered_rows
+                            WHERE row_num % 2 = 0''')
+                result = cursor.fetchone()
+                total_vehicles = result[0] if result else 0
+                print(total_vehicles)
+
+                # Update the label
+                self.lbl_noOfVehicleExit.configure(text=f"Total Vehicles Exit:\n {total_vehicles}")
 
                 # Update the vehicle list information
                 self.update_vehicle_list()

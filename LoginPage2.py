@@ -3,8 +3,8 @@
 from tkinter import StringVar
 from tkinter import messagebox
 import customtkinter as cttk
-# from Dashboard2 import Dashboard
-from Dashboard import Dashboard
+from Dashboard2 import Dashboard
+# from Dashboard import Dashboard
 import threading
 import serial
 import mysql.connector
