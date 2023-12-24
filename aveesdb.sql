@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 20, 2023 at 03:43 AM
+-- Generation Time: Dec 24, 2023 at 05:55 AM
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 8.1.4
 
@@ -42,6 +42,25 @@ CREATE TABLE `regvehicle` (
 
 INSERT INTO `regvehicle` (`Vehicle_id`, `Tag_id`, `VehicleName`, `VehicleNo`, `VehicleOwner`, `OwnerContact`) VALUES
 (1, 'A3377FA7', 'Tata EV', '5647', 'Bikash Chaudhary', '9812264188');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user`
+--
+
+CREATE TABLE `user` (
+  `uid` int(11) NOT NULL,
+  `username` varchar(255) NOT NULL,
+  `pwd` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`uid`, `username`, `pwd`) VALUES
+(1, 'admin', 'admin');
 
 -- --------------------------------------------------------
 
@@ -125,7 +144,50 @@ INSERT INTO `vehicledetails` (`Id`, `Tag_id`, `Entry_Time`) VALUES
 (63, 'A3377FA7', '2023-12-20 02:21:27'),
 (64, 'A3377FA7', '2023-12-20 02:22:18'),
 (65, 'A3377FA7', '2023-12-20 02:25:44'),
-(66, 'A3377FA7', '2023-12-20 02:26:31');
+(66, 'A3377FA7', '2023-12-20 02:26:31'),
+(67, 'A3377FA7', '2023-12-21 16:48:44'),
+(68, 'A3377FA7', '2023-12-21 16:48:46'),
+(69, 'A3377FA7', '2023-12-21 16:48:48'),
+(70, 'A3377FA7', '2023-12-21 16:48:50'),
+(71, 'A3377FA7', '2023-12-21 16:48:53'),
+(72, 'A3377FA7', '2023-12-21 16:48:56'),
+(73, 'A3377FA7', '2023-12-21 16:49:38'),
+(74, 'A3377FA7', '2023-12-21 16:49:42'),
+(75, 'A3377FA7', '2023-12-21 16:50:20'),
+(76, 'A3377FA7', '2023-12-21 16:51:41'),
+(77, 'A3377FA7', '2023-12-21 16:51:48'),
+(78, 'A3377FA7', '2023-12-21 16:52:03'),
+(79, 'A3377FA7', '2023-12-22 16:16:36'),
+(80, 'A3377FA7', '2023-12-22 16:18:11'),
+(81, 'A3377FA7', '2023-12-22 16:18:15'),
+(82, 'A3377FA7', '2023-12-22 16:22:07'),
+(83, 'A3377FA7', '2023-12-22 16:26:13'),
+(84, 'A3377FA7', '2023-12-22 16:26:18'),
+(85, 'A3377FA7', '2023-12-24 00:57:48'),
+(86, 'A3377FA7', '2023-12-24 00:57:59'),
+(87, 'A3377FA7', '2023-12-24 01:08:34'),
+(88, 'A3377FA7', '2023-12-24 01:10:42'),
+(89, 'A3377FA7', '2023-12-24 01:11:36'),
+(90, 'A3377FA7', '2023-12-24 01:12:11'),
+(91, 'A3377FA7', '2023-12-24 01:15:10'),
+(92, 'A3377FA7', '2023-12-24 01:16:15'),
+(93, 'A3377FA7', '2023-12-24 01:16:45'),
+(95, 'A3377FA7', '2023-12-24 01:25:30'),
+(96, 'A3377FA7', '2023-12-24 01:27:48'),
+(97, 'A3377FA7', '2023-12-24 01:28:25'),
+(98, 'A3377FA7', '2023-12-24 01:31:06'),
+(99, 'A3377FA7', '2023-12-24 01:31:22'),
+(100, 'A3377FA7', '2023-12-24 01:33:56'),
+(101, 'A3377FA7', '2023-12-24 01:34:08'),
+(102, 'A3377FA7', '2023-12-24 01:36:00'),
+(103, 'A3377FA7', '2023-12-24 01:54:51'),
+(104, 'A3377FA7', '2023-12-24 01:55:01'),
+(105, 'A3377FA7', '2023-12-24 02:36:23'),
+(106, 'A3377FA7', '2023-12-24 02:36:26'),
+(107, 'A3377FA7', '2023-12-24 02:52:45'),
+(108, 'A3377FA7', '2023-12-24 02:53:32'),
+(109, 'A3377FA7', '2023-12-24 02:54:44'),
+(110, 'A3377FA7', '2023-12-24 02:54:46');
 
 --
 -- Indexes for dumped tables
@@ -136,6 +198,12 @@ INSERT INTO `vehicledetails` (`Id`, `Tag_id`, `Entry_Time`) VALUES
 --
 ALTER TABLE `regvehicle`
   ADD PRIMARY KEY (`Vehicle_id`);
+
+--
+-- Indexes for table `user`
+--
+ALTER TABLE `user`
+  ADD PRIMARY KEY (`uid`);
 
 --
 -- Indexes for table `vehicledetails`
@@ -151,13 +219,19 @@ ALTER TABLE `vehicledetails`
 -- AUTO_INCREMENT for table `regvehicle`
 --
 ALTER TABLE `regvehicle`
-  MODIFY `Vehicle_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `Vehicle_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `user`
+--
+ALTER TABLE `user`
+  MODIFY `uid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `vehicledetails`
 --
 ALTER TABLE `vehicledetails`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=111;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

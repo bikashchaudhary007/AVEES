@@ -65,7 +65,7 @@ class Dashboard:
         self.update_total_vehicles_label()
 
         # Vehicle List Frame
-        self.vehicle_list_frame = cttk.CTkFrame(self.components_frame, width=600, height=250, fg_color=("red", "#4B49AC"))
+        self.vehicle_list_frame = cttk.CTkFrame(self.dashboard_frame, width=600, height=250, fg_color=("red", "#4B49AC"))
         self.vehicle_list_frame.place(x=70, y=170)
 
         # Treeview to display vehicle list
@@ -116,9 +116,9 @@ class Dashboard:
                                         command=lambda: self.show_frame(self.components_frame))
         btn_components.place(x=10, y=140)
 
-        # # Register Vehicle
-        # btn_components = cttk.CTkButton(SideMenuFrame, text="Register", font=("Arial", 14, "bold"), height=35, width=180, command=self.registerVehicle)
-        # btn_components.place(x=10, y=180)
+        # Register Vehicle
+        btn_components = cttk.CTkButton(SideMenuFrame, text="Register", font=("Arial", 14, "bold"), height=35, width=180, command=self.registerVehicle)
+        btn_components.place(x=10, y=180)
 
         # Logout
         btn_logout = cttk.CTkButton(SideMenuFrame, text="Logout", font=("Arial", 14, "bold"), command=self.logout,

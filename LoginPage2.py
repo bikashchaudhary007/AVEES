@@ -3,10 +3,12 @@
 from tkinter import StringVar
 from tkinter import messagebox
 import customtkinter as cttk
+# from Dashboard2 import Dashboard
 from Dashboard import Dashboard
 import threading
 import serial
 import mysql.connector
+import tkinter as tk
 
 
 db_conn = mysql.connector.connect(
@@ -80,7 +82,10 @@ class LoginSystem:
             messagebox.showinfo("Login Successful", "Welcome!")
             # If login is successful, hide the login window
             self.root.iconify()
+            # self.root.destroy()
             # Create and show the Dashboard window
+            # dashboard_root = tk.Tk()
+            # dashboard_root = cttk.CTk()
             dashboard_root = cttk.CTk()
             dashboard_obj = Dashboard(dashboard_root, self.username.get())
             dashboard_root.protocol("WM_DELETE_WINDOW", self.on_dashboard_close)  # handle close event
