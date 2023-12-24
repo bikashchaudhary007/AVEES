@@ -14,6 +14,10 @@ try:
 except Exception as e:
     print(f"Failed to connect on {serial_port}: {str(e)}")
 
+# Function to trigger the buzzer
+def trigger_buzzer():
+    arduino.write(b'B')  # Sending 'B' to trigger the buzzer signal in Arduino
+
 while True:
     try:
         print("Reading: ")
@@ -26,18 +30,25 @@ while True:
                 cursor.execute("SELECT * FROM regvehicle WHERE Tag_id = %s", (card_id,))
                 result = cursor.fetchone()
                 print(result)
-                print(result[6])
+                # print(result[6])
 
 
             if result:
-                # Card ID is registered, record attendance
-                with db_conn.cursor() as cursor:
-                    cursor.execute(
-                        "INSERT INTO vehicledetails (Tag_id, Entry_Time) VALUES (%s, NOW())",
-                        (card_id,)
-                    )
-                    db_conn.commit()
-                    print(f"Entry recorded for card ID: {card_id}")
+                status = result[6]
+
+                if status == "stolen":
+                    #Trigger the buzzer
+                    trigger_buzzer()
+                    print("WARNING: This RFID tag is marked as stolen!")
+                else: 
+                    # Card ID is registered, record attendance
+                    with db_conn.cursor() as cursor:
+                        cursor.execute(
+                            "INSERT INTO vehicledetails (Tag_id, Entry_Time) VALUES (%s, NOW())",
+                            (card_id,)
+                        )
+                        db_conn.commit()
+                        print(f"Entry recorded for card ID: {card_id}")
             else:
                 # Card ID not found, register it
                 print(f"Card ID {card_id} is not registered.")

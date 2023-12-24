@@ -93,7 +93,7 @@ class LoginSystem:
             
         else:
             # If login fails, show an error message or handle accordingly
-            messagebox.showerror("Login Failed", "Invalid credentials. Please try again.")
+            self.messagebox.showerror("Login Failed", "Invalid credentials. Please try again.")
             # If login fails, show an error message or handle accordingly
             print("Invalid credentials. Please try again.")
     

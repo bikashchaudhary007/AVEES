@@ -385,6 +385,10 @@ class Dashboard:
             self.arduino = serial.Serial('COM5', 9600)
         except Exception as e:
             print(f"Failed to connect on COM5: {str(e)}")
+        
+        # Function to trigger the buzzer
+        def trigger_buzzer():
+            self.arduino.write(b'B')  # Sending 'B' to trigger the buzzer signal in Arduino
 
         while self.rfid_scan_flag:
             try:
@@ -399,14 +403,22 @@ class Dashboard:
                         result = cursor.fetchone()
 
                     if result:
-                        # Card ID is registered, record attendance
-                        with self.db_conn.cursor() as cursor:
-                            cursor.execute(
-                                "INSERT INTO vehicledetails (Tag_id, Entry_Time) VALUES (%s, NOW())",
-                                (card_id,)
-                            )
-                            self.db_conn.commit()
-                            print(f"Entry recorded for card ID: {card_id}")
+                        status = result[6] #Set Card Status
+
+                        if status == "stolen":
+                            #Trigger the buzzer
+                            trigger_buzzer()
+                            messagebox.showwarning(f"WARNING: This RFID tag {card_id} /n is marked as stolen!")
+                            print("WARNING: This RFID tag is marked as stolen!")
+                        else: 
+                            # Card ID is registered, record attendance
+                            with self.db_conn.cursor() as cursor:
+                                cursor.execute(
+                                    "INSERT INTO vehicledetails (Tag_id, Entry_Time) VALUES (%s, NOW())",
+                                    (card_id,)
+                                )
+                                self.db_conn.commit()
+                                print(f"Entry recorded for card ID: {card_id}")
                     else:
                         print("Need To Register card")
 
