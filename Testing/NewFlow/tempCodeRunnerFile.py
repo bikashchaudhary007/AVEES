@@ -1,1 +1,1 @@
-login_view
+from app.controllers.login_controller import LoginController

@@ -18,3 +18,5 @@ class LoginController:
         self.dashboard_view = DashboardView(self.dashboard_controller)
         self.dashboard_view.mainloop()
         self.login_view.destroy()  # Close the login window
+
+    
