@@ -38,8 +38,6 @@ class Dashboard:
             database="aveesdb"
         )
 
-
-
         # Create a flag to control the RFID scanning thread
         self.rfid_scan_flag = True
 
@@ -50,37 +48,14 @@ class Dashboard:
     
 
         # Create frames for dashboard, settings, and components
-        self.dashboard_frame = cttk.CTkScrollableFrame(root, width=850, height=650, fg_color=("white", "#4B49AC"))
+        self.dashboard_frame = cttk.CTkFrame(root, width=850, height=650, fg_color=("white", "#4B49AC"))
         self.settings_frame = cttk.CTkFrame(root, width=850, height=450, fg_color=("white", "#4B49AC"))
         self.components_frame = cttk.CTkFrame(root, width=850, height=450, fg_color=("white", "#4B49AC"))
 
-        # Initial frame to show is the dashboard frame
-        self.current_frame = self.dashboard_frame
-        self.show_frame()
-
-        #-------------------Top Main Frame----------------------------------------------------
-        self.top_main_frame = cttk.CTkFrame(self.dashboard_frame,height=60,fg_color=("#4B49AC", "white"))
-        self.top_main_frame.pack(fill="x",padx=10,pady=10)
-
-        # Displaying the username on the dashboard
-        username_label = cttk.CTkLabel(self.top_main_frame, text=f"Welcome, {self.user}!", font=("Arial", 16, "bold"))
-        username_label.pack(side='left',padx=10,pady=10)
-
-        btn_profile = cttk.CTkButton(self.top_main_frame,text="Profile",font=("Arial", 16, "bold"))
-        btn_profile.pack(side='right',padx=10,pady=10)
-
-        #--------------x-----Top Main Frame-------x---------------------------------------------
-
-        #--------------------------------Vechile Details Frame-----------------------------------------------------------
-        self.vechile_count_detail_frame= cttk.CTkFrame(self.dashboard_frame,height=300,fg_color=("green", "#4B49AC"))
-        self.vechile_count_detail_frame.pack(fill="x",padx=10,pady=10)
-        #----------------------x----------Vechile Details Frame----------x-------------------------------------------------
-
         # ----------------Dashboard Inside Widgets-----------------------------------
         #No of Vehicles Entered
-        self.vehicle_entered_frame = cttk.CTkFrame(self.vechile_count_detail_frame, width=350, height=350,fg_color=("#4B49AC", "white"))
-        # self.vehicle_entered_frame.place(x=30,y=50)
-        self.vehicle_entered_frame.pack(side='left',padx=30,pady=30)
+        self.vehicle_entered_frame = cttk.CTkFrame(self.dashboard_frame, width=250, height=100,fg_color=("#4B49AC", "white"))
+        self.vehicle_entered_frame.place(x=30,y=50)
 
         # Corrected initialization of lbl_noOfVehicleEntered
         self.lbl_noOfVehicleEntered = cttk.CTkLabel(
@@ -89,15 +64,15 @@ class Dashboard:
             font=("Arial", 18, "bold"),
             fg_color=("#4B49AC", "white")
         )
-        self.lbl_noOfVehicleEntered.pack(padx=30,pady=30)
+        self.lbl_noOfVehicleEntered.place(x=70,y=20)
 
         # Initialize the total number of vehicles label
         self.update_total_vehicles_label()
 
 
         #No of Vehicles Exit
-        self.vehicle_exit_frame = cttk.CTkFrame(self.vechile_count_detail_frame, width=350, height=350,fg_color=("#98BDFF", "white"))
-        self.vehicle_exit_frame.pack(side='left',padx=30,pady=30)
+        self.vehicle_exit_frame = cttk.CTkFrame(self.dashboard_frame, width=250, height=100,fg_color=("#98BDFF", "white"))
+        self.vehicle_exit_frame.place(x=300,y=50)
 
         self.lbl_noOfVehicleExit = cttk.CTkLabel(
             self.vehicle_exit_frame,
@@ -105,7 +80,7 @@ class Dashboard:
             font=("Arial", 18, "bold"),
             fg_color=("#98BDFF", "white")
         )
-        self.lbl_noOfVehicleExit.pack(padx=30,pady=30)
+        self.lbl_noOfVehicleExit.place(x=70,y=20)
 
         self.update_total_vehicles_exit_label()
 
@@ -134,10 +109,13 @@ class Dashboard:
         self.update_vehicle_list()
 
 
-        # # Initial frame to show is the dashboard frame
-        # self.current_frame = self.dashboard_frame
-        # self.show_frame()
+        # Initial frame to show is the dashboard frame
+        self.current_frame = self.dashboard_frame
+        self.show_frame()
 
+        # Displaying the username on the dashboard
+        username_label = cttk.CTkLabel(self.dashboard_frame, text=f"Welcome, {self.user}!", font=("Arial", 16, "bold"))
+        username_label.place(x=10, y=20)
 
         #-----------------------------------SideMenu Frame---------------------------------------
         SideMenuFrame = cttk.CTkFrame(root, width=200, height=450, fg_color=("white", "#4B49AC"))
@@ -228,8 +206,7 @@ class Dashboard:
 
 
         self.filter_frame = ttk.Frame(self.dashboard_frame,width=650, height=50)
-        # self.filter_frame.place(x=70,y=180)
-        self.filter_frame.pack(padx=10,pady=10)
+        self.filter_frame.place(x=70,y=180)
 
         self.current_month_start, self.current_month_end = self.get_current_month_dates()
 
@@ -248,9 +225,7 @@ class Dashboard:
         self.label_to_date.grid(row=0, column=2, padx=5, pady=5)
 
         self.graph_frame = ttk.Frame(self.dashboard_frame, width=650, height=650)
-        # self.graph_frame.place(x=40,y=210)
-        self.graph_frame.pack()
-        
+        self.graph_frame.place(x=40,y=210)
 
         self.plot_vehicle_count(self.current_month_start, self.current_month_end)
 
@@ -335,8 +310,7 @@ class Dashboard:
             #     self.rfid_scan_background() 
 
             # Hide the current frame
-            # self.current_frame.place_forget()
-            self.current_frame.pack_forget()
+            self.current_frame.place_forget()
 
             # Update the current frame to the selected frame
             self.current_frame = frame
@@ -344,8 +318,7 @@ class Dashboard:
             
 
         # Show the selected frame
-        # self.current_frame.place(x=280, y=50)
-        self.current_frame.pack(padx=230,pady=50)
+        self.current_frame.place(x=280, y=50)
         # Update the total number of vehicles when switching to the dashboard frame
         if frame == self.dashboard_frame:
             self.update_total_vehicles_label()
@@ -574,4 +547,3 @@ class Dashboard:
         #  import LoginPage
         os.system("python LoginPage2.py") #better to use this
         print("logout")
-
