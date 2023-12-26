@@ -26,6 +26,7 @@ class Dashboard:
         self.db_conn = None  # Initialize db_conn to None
         self.lbl_noOfVehicleEntered =None
         self.lbl_noOfVehicleExit = None
+        self.today_date = date.today()
         # self.treeview = None
 
 
@@ -66,12 +67,26 @@ class Dashboard:
         username_label = cttk.CTkLabel(self.top_main_frame, text=f"Welcome, {self.user}!", font=("Arial", 16, "bold"))
         username_label.pack(side='left',padx=10,pady=10)
 
+        #Today date and time
+        today_date_label = cttk.CTkLabel(self.top_main_frame, text=f"{self.today_date}", font=("Arial", 16, "bold"))
+        today_date_label.pack(side='left',padx=10,pady=10)
+
+        #Current Time Clock
+        self.clock_label = cttk.CTkLabel(self.top_main_frame, font=("Arial", 24, "bold"))
+        self.clock_label.pack(side='left',padx=10,pady=10)
+
+        self.update_time()
+
+
+        #Profile
         btn_profile = cttk.CTkButton(self.top_main_frame,text="Profile",font=("Arial", 16, "bold"))
         btn_profile.pack(side='right',padx=10,pady=10)
 
+        
+
         #--------------x-----Top Main Frame-------x---------------------------------------------
 
-        #--------------------------------Vechile Details Frame-----------------------------------------------------------
+        #--------------------------------Vechile Count Details Frame-----------------------------------------------------------
         self.vechile_count_detail_frame= cttk.CTkFrame(self.dashboard_frame,height=300,fg_color=("white", "#4B49AC"))
         self.vechile_count_detail_frame.pack(fill="x",padx=10,pady=10)
        
@@ -110,7 +125,7 @@ class Dashboard:
 
         self.update_total_vehicles_exit_label()
 
-        #----------------------x----------Vechile Details Frame----------x-------------------------------------------------
+        #----------------------x----------Vechile Count Details Frame----------x-------------------------------------------------
 
 
         # Vehicle List Frame
@@ -671,6 +686,10 @@ class Dashboard:
             self.arduino.close()
     
 
+    def update_time(self):
+        current_time = datetime.now().strftime("%H:%M:%S")
+        self.clock_label.configure(text=current_time)
+        self.clock_label.after(1000, self.update_time)  # Update time every 1000 milliseconds (1 second)
 
     def logout(self):
         # Stop the system and clean up resources
