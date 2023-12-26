@@ -20,7 +20,7 @@ class Dashboard:
         self.root = root
         self.root.title("Dashboard")
         self.root.geometry("1280x1080+50+0")
-        self.root.resizable(False, False)
+        # self.root.resizable(False, False)
         self.user = user
         self.arduino = None  # Initialize self.arduino to None
         self.db_conn = None  # Initialize db_conn to None
@@ -72,9 +72,9 @@ class Dashboard:
         #--------------x-----Top Main Frame-------x---------------------------------------------
 
         #--------------------------------Vechile Details Frame-----------------------------------------------------------
-        self.vechile_count_detail_frame= cttk.CTkFrame(self.dashboard_frame,height=300,fg_color=("green", "#4B49AC"))
+        self.vechile_count_detail_frame= cttk.CTkFrame(self.dashboard_frame,height=300,fg_color=("white", "#4B49AC"))
         self.vechile_count_detail_frame.pack(fill="x",padx=10,pady=10)
-        #----------------------x----------Vechile Details Frame----------x-------------------------------------------------
+       
 
         # ----------------Dashboard Inside Widgets-----------------------------------
         #No of Vehicles Entered
@@ -97,7 +97,7 @@ class Dashboard:
 
         #No of Vehicles Exit
         self.vehicle_exit_frame = cttk.CTkFrame(self.vechile_count_detail_frame, width=350, height=350,fg_color=("#98BDFF", "white"))
-        self.vehicle_exit_frame.pack(side='left',padx=50,pady=30)
+        self.vehicle_exit_frame.pack(side='left',padx=100,pady=30)
 
         self.lbl_noOfVehicleExit = cttk.CTkLabel(
             self.vehicle_exit_frame,
@@ -105,12 +105,12 @@ class Dashboard:
             font=("Arial", 18, "bold"),
             fg_color=("#98BDFF", "white")
         )
-        self.lbl_noOfVehicleExit.pack(padx=30,pady=30,ipadx=14,ipady=14)
+        self.lbl_noOfVehicleExit.pack(padx=30,pady=30,ipadx=18,ipady=14)
 
 
         self.update_total_vehicles_exit_label()
 
-
+        #----------------------x----------Vechile Details Frame----------x-------------------------------------------------
 
 
         # Vehicle List Frame
