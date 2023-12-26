@@ -225,12 +225,13 @@ class Dashboard:
         style = ttk.Style()
         style.configure('TButton', font=('Arial', 12))
 
-        
 
+        # self.filter_frame = ttk.Frame(self.dashboard_frame,width=650, height=50)
+        # self.filter_frame.pack(padx=10,pady=10)
 
-        self.filter_frame = ttk.Frame(self.dashboard_frame,width=650, height=50)
-        # self.filter_frame.place(x=70,y=180)
+        self.filter_frame = cttk.CTkFrame(self.dashboard_frame,width=650, height=50)
         self.filter_frame.pack(padx=10,pady=10)
+
 
         self.current_month_start, self.current_month_end = self.get_current_month_dates()
 
@@ -248,7 +249,7 @@ class Dashboard:
         self.label_to_date = ttk.Label(self.filter_frame, text='To Date:')
         self.label_to_date.grid(row=0, column=2, padx=5, pady=5)
 
-        self.graph_frame = ttk.Frame(self.dashboard_frame, width=650, height=650)
+        self.graph_frame = ttk.Frame(self.dashboard_frame, width=650, height=450)
         # self.graph_frame.place(x=40,y=210)
         self.graph_frame.pack()
         
@@ -258,6 +259,39 @@ class Dashboard:
         self.entry_from_date.bind("<<DateEntrySelected>>", self.update_graph)
         self.entry_to_date.bind("<<DateEntrySelected>>", self.update_graph)
 
+
+        #------------xx-Graphs---------------xx----------------------------
+
+        #-------------------------PIE CHART--------------------------------------------------------------
+        self.pie_filter_frame = ttk.Frame(self.dashboard_frame,width=650, height=50)
+        self.pie_filter_frame.pack(padx=10, pady=10)
+
+        self.pie_entry_from_date = DateEntry(self.pie_filter_frame, width=12, background='darkblue', foreground='white', borderwidth=2)
+        self.pie_entry_from_date.grid(row=0, column=1, padx=5, pady=5)
+        self.pie_entry_from_date.set_date(datetime.now().replace(day=1))  # Default start date (1st day of current month)
+
+        self.pie_entry_to_date = DateEntry(self.pie_filter_frame, width=12, background='darkblue', foreground='white', borderwidth=2)
+        self.pie_entry_to_date.grid(row=0, column=3, padx=5, pady=5)
+        self.pie_entry_to_date.set_date(datetime.now())  # Default end date (current date)
+
+        self.pie_label_from_date = ttk.Label(self.pie_filter_frame, text='From Date:')
+        self.pie_label_from_date.grid(row=0, column=0, padx=5, pady=5)
+
+        self.pie_label_to_date = ttk.Label(self.pie_filter_frame, text='To Date:')
+        self.pie_label_to_date.grid(row=0, column=2, padx=5, pady=5)
+
+        self.pie_chart_frame = ttk.Frame(self.dashboard_frame, width=650, height=650)
+        self.pie_chart_frame.pack()
+
+        self.pie_entry_from_date.bind("<<DateEntrySelected>>", self.update_pie_chart)
+        self.pie_entry_to_date.bind("<<DateEntrySelected>>", self.update_pie_chart)
+
+        # Initially, show pie chart for the current month
+        self.update_pie_chart(None)
+
+        #----------------xx---------PIE CHART------------------xx--------------------------------------------
+    
+        #----Graphs--------
     def get_current_month_dates(self):
         today = date.today()
         first_day = today.replace(day=1)
@@ -295,20 +329,39 @@ class Dashboard:
         # Clear previous plot data
         for widget in self.graph_frame.winfo_children():
             widget.destroy()
+        
+        # List of colors for bars
+        bar_colors = ['#FF5733', '#C70039', '#900C3F', '#581845', '#FFC300', '#DAF7A6', '#FF5733', '#C70039', '#900C3F', '#581845']  # Example colors list
 
+        # fig, ax = plt.subplots(figsize=(7, 4))
+        # bars = ax.bar(x_data, y_data, color='skyblue')
+
+        #Plotting the bar graph with custom colors
         fig, ax = plt.subplots(figsize=(7, 4))
-        bars = ax.bar(x_data, y_data, color='skyblue')
+        bars = ax.bar(x_data, y_data, color=bar_colors[:len(x_data)])  # Use colors list for bars
 
         ax.set_xlabel('Date', fontsize=12)
         ax.set_ylabel('Number of Vehicles', fontsize=12)
         ax.set_title('Number of Vehicles Entered on Different Days', fontsize=14)
         ax.set_xticklabels(x_data, rotation=0)
 
-        ax.set_facecolor('lightgray')
+        ax.set_facecolor('white')
+
+        # Change the color of the X and Y axis labels
+        ax.xaxis.label.set_color('red')  # Change X axis label color
+        ax.yaxis.label.set_color('blue')  # Change Y axis label color
+
+        # Change the color of the X and Y axis ticks and tick labels
+        ax.tick_params(axis='x', colors='green')  # Change X axis tick color
+        ax.tick_params(axis='y', colors='orange')  # Change Y axis tick color
+
+        # Change the color of the spines (borders)
+        for spine in ax.spines.values():
+            spine.set_edgecolor('green')  # Set the border color here
 
         for bar, count in zip(bars, y_data):
             ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), count,
-                    ha='center', va='bottom', color='black', fontsize=10)
+                    ha='center', va='bottom', color='green', fontsize=10)
 
         canvas = FigureCanvasTkAgg(fig, master=self.graph_frame)
         canvas.draw()
@@ -324,6 +377,58 @@ class Dashboard:
         to_date = datetime.strptime(self.entry_to_date.get(), '%m/%d/%y')
         self.plot_vehicle_count(from_date, to_date)
         #-----------x--------Graphs--------------------------------------
+
+
+    
+
+        
+    #-------------------------PIE CHART #--------------------------------------------------------------
+    def fetch_data_from_db(self, from_date, to_date):
+        connection = mysql.connector.connect(
+            host='localhost',
+            user='root',
+            password='',  # Enter your MySQL password here
+            database='aveesdb'
+        )
+
+        cursor = connection.cursor()
+
+        query = "SELECT DATE_FORMAT(Entry_Time, '%Y-%m-%d') AS Entry_Date, COUNT(*) AS Vehicle_Count FROM vehicledetails WHERE Entry_Time BETWEEN %s AND %s GROUP BY Entry_Date"
+        cursor.execute(query, (from_date, to_date))
+
+        rows = cursor.fetchall()
+
+        cursor.close()
+        connection.close()
+
+        return rows
+
+    def update_pie_chart(self, event):
+        from_date = self.pie_entry_from_date.get_date().strftime('%Y-%m-%d')  # Selected 'from' date
+        to_date = self.pie_entry_to_date.get_date().strftime('%Y-%m-%d')  # Selected 'to' date
+
+        rows = self.fetch_data_from_db(from_date, to_date)
+
+        x_data = [row[0] for row in rows]
+        y_data = [row[1] for row in rows]
+
+        labels = x_data
+        sizes = y_data
+
+        # Clear previous plot
+        for widget in self.pie_chart_frame.winfo_children():
+            widget.destroy()
+
+        fig, ax = plt.subplots(figsize=(6, 6))
+        ax.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90)
+        ax.axis('equal')
+
+        ax.set_title('Vehicle Distribution Based on Dates')
+
+        canvas = FigureCanvasTkAgg(fig, master=self.pie_chart_frame)
+        canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+        
+        #-------------------x------PIE CHART-----------------------x---------------------------------------
 
 
     def show_frame(self, frame=None):
