@@ -578,6 +578,8 @@ class Dashboard:
         connection.close()
         messagebox.showinfo("Updated", "Vehicle details updated successfully!")
         self.clear_vehicle_details_fields()
+        # self.stop_rfid_scan_thread()
+        # self.rfid_thread.start()
 
     def clear_vehicle_details_fields(self):
         # Clear all entry fields
