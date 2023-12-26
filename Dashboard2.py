@@ -54,6 +54,7 @@ class Dashboard:
         self.dashboard_frame = cttk.CTkScrollableFrame(root, width=850, height=650, fg_color=("white", "#4B49AC"))
         self.settings_frame = cttk.CTkFrame(root, width=850, height=450, fg_color=("white", "#4B49AC"))
         self.components_frame = cttk.CTkFrame(root, width=850, height=450, fg_color=("white", "#4B49AC"))
+        self.vehicle_details_frame = cttk.CTkScrollableFrame(root, width=850, height=450, fg_color=("white", "#4B49AC"))
 
         # Initial frame to show is the dashboard frame
         self.current_frame = self.dashboard_frame
@@ -177,9 +178,10 @@ class Dashboard:
                                         command=lambda: self.show_frame(self.components_frame))
         btn_components.place(x=10, y=140)
 
-        # # Register Vehicle
-        # btn_components = cttk.CTkButton(SideMenuFrame, text="Register", font=("Arial", 14, "bold"), height=35, width=180, command=self.registerVehicle)
-        # btn_components.place(x=10, y=180)
+        # Register Vehicle
+        btn_vehicle_details = cttk.CTkButton(SideMenuFrame, text="Vehicle Details", font=("Arial", 14, "bold"), height=35, width=180,
+                                             command=lambda:self.show_frame(self.vehicle_details_frame))
+        btn_vehicle_details.place(x=10, y=180)
 
         # Logout
         btn_logout = cttk.CTkButton(SideMenuFrame, text="Logout", font=("Arial", 14, "bold"), command=self.logout,
@@ -444,6 +446,153 @@ class Dashboard:
         canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
         
         #-------------------x------PIE CHART-----------------------x---------------------------------------
+
+
+
+        #----------------------Vechicles Details--------------------------------------------------
+        # Create cursor
+
+
+
+        vehicle_details_label = cttk.CTkLabel(self.vehicle_details_frame, text=f"Vehicle Details", font=("Arial", 16, "bold"))
+        vehicle_details_label.pack(padx=10,pady=10)
+
+
+        #---------Search -----------------
+        self.vehicle_search_frame = cttk.CTkFrame(self.vehicle_details_frame,width=850,height=100,fg_color=("#4B49AC", "white"))
+        self.vehicle_search_frame.pack(fill="x",padx=10,pady=10)
+
+        lbl_search_vehicle_no = cttk.CTkLabel(self.vehicle_search_frame, text="Vehicle No:")
+        lbl_search_vehicle_no.pack(side='left',padx=10,pady=10)
+
+        #search box
+        self.entry_search_vehicle_no = cttk.CTkEntry(self.vehicle_search_frame)
+        self.entry_search_vehicle_no.pack(side='left',padx=20,pady=10)
+
+        #search button
+        btn_search = cttk.CTkButton(self.vehicle_search_frame, text="search", font=("Arial", 14, "bold"), command=self.search_vehicle,
+                                    height=35, corner_radius=20)
+        btn_search.pack(side='left',padx=10,pady=10)
+
+         #----xx----Search ----xx-------------
+        
+        #---------------Fetched Vehicle Details-------------------------
+        self.vehicle_search_details_frame = cttk.CTkFrame(self.vehicle_details_frame,width=850,height=650,fg_color=("green", "white"))
+        self.vehicle_search_details_frame.pack(fill="x",padx=10,pady=10)
+
+        #searched lables and entry widgets
+
+        #search vehicle owner
+        lbl_search_vehicle_owner = cttk.CTkLabel(self.vehicle_search_details_frame, text="Vehicle Owner:")
+        lbl_search_vehicle_owner.pack()
+        self.entry_search_vehicle_owner = cttk.CTkEntry(self.vehicle_search_details_frame)
+        self.entry_search_vehicle_owner.pack()
+
+        #search vehicle name
+        lbl_search_vehicle_name = cttk.CTkLabel(self.vehicle_search_details_frame, text="Vehicle Name:")
+        lbl_search_vehicle_name.pack()
+        self.entry_search_vehicle_name = cttk.CTkEntry(self.vehicle_search_details_frame)
+        self.entry_search_vehicle_name.pack()
+
+
+        #search vehicle number
+        lbl_search_vehicle_no = cttk.CTkLabel(self.vehicle_search_details_frame, text="Vehicle No:")
+        lbl_search_vehicle_no.pack()
+        self.entry_search_vehicle_no_display = cttk.CTkEntry(self.vehicle_search_details_frame)
+        self.entry_search_vehicle_no_display.pack()
+
+        #search vehicle tag
+        lbl_search_vehicle_tag_id = cttk.CTkLabel(self.vehicle_search_details_frame, text="Vehicle Tag Id:")
+        lbl_search_vehicle_tag_id.pack()
+        self.entry_search_vehicle_tag_id = cttk.CTkEntry(self.vehicle_search_details_frame)
+        self.entry_search_vehicle_tag_id.pack()
+
+        #search vehicle status
+        lbl_search_vehicle_status = cttk.CTkLabel(self.vehicle_search_details_frame, text="Status:")
+        lbl_search_vehicle_status.pack()
+        self.entry_search_vehicle_status = cttk.CTkEntry(self.vehicle_search_details_frame)
+        self.entry_search_vehicle_status.pack()
+
+        #update button to update the vehicle details
+        btn_update_vehicle_details = cttk.CTkButton(self.vehicle_search_details_frame, text="Update", font=("Arial", 14, "bold"), command=self.update_vehicle,
+                                    height=35, corner_radius=20)
+        btn_update_vehicle_details.pack(padx=10,pady=10)
+
+        #Refresh button to update the vehicle details
+        btn_refresh_vehicle_details = cttk.CTkButton(self.vehicle_search_details_frame, text="Refresh", font=("Arial", 14, "bold"), command=self.clear_vehicle_details_fields,
+                                    height=35, corner_radius=20)
+        btn_refresh_vehicle_details.pack(padx=10,pady=10)
+
+
+        #----x-----------Fetched Vehicle Details---------x----------------
+    
+    def search_vehicle(self):
+        connection = mysql.connector.connect(
+            host='localhost',
+            user='root',
+            password='',
+            database='aveesdb'
+        )
+
+        cursor = connection.cursor()
+       
+        vehicle_number = self.entry_search_vehicle_no.get()
+        
+        query = "SELECT * FROM regvehicle WHERE VehicleNo = %s"
+        cursor.execute(query, (vehicle_number,))
+        vehicle = cursor.fetchone()
+        
+        if vehicle:
+            self.entry_search_vehicle_owner.insert(0, vehicle[4])  
+            self.entry_search_vehicle_name.insert(0, vehicle[2])  
+            self.entry_search_vehicle_no_display.insert(0, vehicle[3]) 
+            self.entry_search_vehicle_tag_id.insert(0, vehicle[1])
+            self.entry_search_vehicle_status.insert(0, vehicle[6])  
+        else:
+            messagebox.showinfo("Not Found", "Vehicle not found!")
+        
+        cursor.close()
+        connection.close()
+    
+    def update_vehicle(self):
+        connection = mysql.connector.connect(
+            host='localhost',
+            user='root',
+            password='',
+            database='aveesdb'
+        )
+
+        cursor = connection.cursor()
+
+        updated_owner = self.entry_search_vehicle_owner.get()
+        updated_name = self.entry_search_vehicle_name.get()
+        updated_status = self.entry_search_vehicle_status.get()
+
+        print(f"Vehicle Number: {self.entry_search_vehicle_no_display.get()}")
+        
+        update_query = "UPDATE regvehicle SET VehicleOwner = %s, VehicleName = %s,status = %s WHERE VehicleNo = %s"
+        cursor.execute(update_query, (updated_owner, updated_name, updated_status, self.entry_search_vehicle_no_display.get()))
+        
+        connection.commit()
+        cursor.close()
+        connection.close()
+        messagebox.showinfo("Updated", "Vehicle details updated successfully!")
+        self.clear_vehicle_details_fields()
+
+    def clear_vehicle_details_fields(self):
+        # Clear all entry fields
+        self.entry_search_vehicle_no.delete(0, cttk.END)
+        self.entry_search_vehicle_owner.delete(0, cttk.END)
+        self.entry_search_vehicle_name.delete(0, cttk.END)
+        self.entry_search_vehicle_no_display.delete(0, cttk.END)
+        self.entry_search_vehicle_tag_id.delete(0, cttk.END)
+        self.entry_search_vehicle_status.delete(0, cttk.END)
+        
+
+        
+        #--------------x--------Vechicles Details------------------------x--------------------------
+        
+
 
 
     def show_frame(self, frame=None):
