@@ -89,7 +89,7 @@ class Dashboard:
             font=("Arial", 18, "bold"),
             fg_color=("#4B49AC", "white")
         )
-        self.lbl_noOfVehicleEntered.pack(padx=30,pady=30)
+        self.lbl_noOfVehicleEntered.pack(padx=40,pady=30,ipadx=20,ipady=14)
 
         # Initialize the total number of vehicles label
         self.update_total_vehicles_label()
@@ -97,7 +97,7 @@ class Dashboard:
 
         #No of Vehicles Exit
         self.vehicle_exit_frame = cttk.CTkFrame(self.vechile_count_detail_frame, width=350, height=350,fg_color=("#98BDFF", "white"))
-        self.vehicle_exit_frame.pack(side='left',padx=30,pady=30)
+        self.vehicle_exit_frame.pack(side='left',padx=50,pady=30)
 
         self.lbl_noOfVehicleExit = cttk.CTkLabel(
             self.vehicle_exit_frame,
@@ -105,7 +105,8 @@ class Dashboard:
             font=("Arial", 18, "bold"),
             fg_color=("#98BDFF", "white")
         )
-        self.lbl_noOfVehicleExit.pack(padx=30,pady=30)
+        self.lbl_noOfVehicleExit.pack(padx=30,pady=30,ipadx=14,ipady=14)
+
 
         self.update_total_vehicles_exit_label()
 
@@ -435,7 +436,7 @@ class Dashboard:
                         if status == "stolen":
                             #Trigger the buzzer
                             trigger_buzzer()
-                            messagebox.showwarning(f"WARNING: This RFID tag {card_id} /n is marked as stolen!")
+                            messagebox.showwarning(f"WARNING!!!",f"This RFID tag {card_id} \n is marked as stolen!")
                             print("WARNING: This RFID tag is marked as stolen!")
                         else: 
                             # Card ID is registered, record attendance
@@ -489,7 +490,7 @@ class Dashboard:
                 print(total_vehicles)
 
                 # Update the label
-                self.lbl_noOfVehicleEntered.configure(text=f"Total Vehicles: {total_vehicles}")
+                self.lbl_noOfVehicleEntered.configure(text=f"Total Vehicles: \n {total_vehicles}")
 
                 # Update the vehicle list information
                 self.update_vehicle_list()
