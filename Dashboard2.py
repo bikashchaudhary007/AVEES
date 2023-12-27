@@ -815,9 +815,6 @@ class Dashboard:
             print(f"Error updating vehicle list: {str(e)}")
 
 
-    
-    
-
     def registerVehicle(self):
         self.root.destroy()
         #  import LoginPage
@@ -844,10 +841,11 @@ class Dashboard:
 
     def logout(self):
         # Stop the system and clean up resources
-        self.stop_system()
-
+        # self.stop_system()
+        self.stop_rfid_scan_thread()
         self.root.destroy()
         #  import LoginPage
         os.system("python LoginPage2.py") #better to use this
         print("logout")
+
 
