@@ -16,11 +16,9 @@ from datetime import datetime, date
 
 class Dashboard:
     def __init__(self, root, user):
-        # serial_port = 'COM5'
         self.root = root
         self.root.title("Dashboard")
         self.root.geometry("1280x1080+50+0")
-        # self.root.resizable(False, False)
         self.user = user
         self.arduino = None  # Initialize self.arduino to None
         self.db_conn = None  # Initialize db_conn to None
@@ -710,7 +708,7 @@ class Dashboard:
                             messagebox.showwarning(f"WARNING!!!",f"This RFID tag {card_id} \n is marked as stolen!")
                             print("WARNING: This RFID tag is marked as stolen!")
                         else: 
-                            # Card ID is registered, record attendance
+                            # Card ID is registered, record vehicle
                             with self.db_conn.cursor() as cursor:
                                 cursor.execute(
                                     "INSERT INTO vehicledetails (Tag_id, Entry_Time) VALUES (%s, NOW())",
