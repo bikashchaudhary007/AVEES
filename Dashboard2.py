@@ -181,6 +181,11 @@ class Dashboard:
                                              command=lambda:self.show_frame(self.vehicle_details_frame))
         btn_vehicle_details.place(x=10, y=180)
 
+        # # Emergency Button
+        # btn_emergency = cttk.CTkButton(SideMenuFrame, text="Emergency", font=("Arial", 14, "bold"), command=self.emergency,
+        #                             height=35, corner_radius=20)
+        # btn_emergency.place(x=10, y=220)
+
         # Logout
         btn_logout = cttk.CTkButton(SideMenuFrame, text="Logout", font=("Arial", 14, "bold"), command=self.logout,
                                     height=35, corner_radius=20)
@@ -686,6 +691,11 @@ class Dashboard:
         # Function to trigger the buzzer
         def trigger_buzzer():
             self.arduino.write(b'B')  # Sending 'B' to trigger the buzzer signal in Arduino
+        
+        #Function to move servo motor
+        def move_servo():
+            self.arduino.write(b'S')  # Sending 'S' to trigger servo movement
+            print("Registered vehicle found. Triggering servo motor.")
 
         while self.rfid_scan_flag:
             try:
@@ -716,6 +726,7 @@ class Dashboard:
                                 )
                                 self.db_conn.commit()
                                 print(f"Entry recorded for card ID: {card_id}")
+                            move_servo() #Calling move servo motor function
                     else:
                         print("Need To Register card")
 
@@ -724,6 +735,24 @@ class Dashboard:
 
             # Add a small delay to avoid high CPU usage in the loop
             time.sleep(0.1)
+    
+    #In Energency Case
+    def emergency(self):
+        try:
+                self.arduino = serial.Serial('COM5', 9600)
+        except Exception as e:
+                messagebox.showerror("Error", f"Failed to connect on COM5: {str(e)}")
+                print(f"Failed to connect on COM5: {str(e)}")
+                return
+        
+        try:
+               
+                self.arduino.write(b'E')
+        except Exception as e:
+                messagebox.showerror("Error", f"Failed to run energency: {str(e)}")
+                print(f"Failed to run energency: {str(e)}")
+                return
+
 
     
     def stop_rfid_scan_thread(self):
@@ -841,6 +870,7 @@ class Dashboard:
         # Stop the system and clean up resources
         # self.stop_system()
         self.stop_rfid_scan_thread()
+        # time.sleep(0.1)
         self.root.destroy()
         #  import LoginPage
         os.system("python LoginPage2.py") #better to use this
