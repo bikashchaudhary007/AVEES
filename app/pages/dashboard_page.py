@@ -33,15 +33,27 @@ class DashboardPage:
         self.register_frame = tk.Frame(self.root, width=600, height=400, bg="white")
         self.details_frame = tk.Frame(self.root, width=600, height=400, bg="white")
 
-        # Add labels to each module
-        self.dashboard_label = tk.Label(self.dashboard_frame, text="Dashboard Main Frame", font=("Arial", 18))
-        self.dashboard_label.pack(pady=20)
+        # Create an instance of DashboardMainFrame
+        self.dashboard_main_frame = DashboardMainFrame(self.dashboard_frame)  # Pass the dashboard_frame as the parent
 
-        self.register_label = tk.Label(self.register_frame, text="Register Vehicle", font=("Arial", 18))
-        self.register_label.pack(pady=20)
+        # Create an instance of register_vehicle_frame
+        self.register_vehicle_frame = RegisterVehicle(self.register_frame)  # Pass the dashboard_frame as the parent
 
-        self.details_label = tk.Label(self.details_frame, text="Vehicle Details", font=("Arial", 18))
-        self.details_label.pack(pady=20)
+        # Create an instance of vehicle_details_frame
+        self.vehicle_details_frame = VehicleDetails(self.details_frame)  # Pass the dashboard_frame as the parent
+
+
+
+
+        # # Add labels to each module
+        # self.dashboard_label = tk.Label(self.dashboard_frame, text="Dashboard Main Frame", font=("Arial", 18))
+        # self.dashboard_label.pack(pady=20)
+
+        # self.register_label = tk.Label(self.register_frame, text="Register Vehicle", font=("Arial", 18))
+        # self.register_label.pack(pady=20)
+
+        # self.details_label = tk.Label(self.details_frame, text="Vehicle Details", font=("Arial", 18))
+        # self.details_label.pack(pady=20)
 
 
         # Pack only the dashboard frame initially
@@ -54,14 +66,21 @@ class DashboardPage:
         self.details_frame.pack_forget()
         self.dashboard_frame.pack()
 
+        # Display the Dashboard Main Frame contents
+        self.dashboard_main_frame.dashboard_frame.pack()
+
+
         # Update or populate Dashboard Main Frame widgets
         # Add widgets and logic specific to Dashboard Main Frame
+
 
     def show_register_vehicle(self):
         # Hide other frames and show Register Vehicle
         self.dashboard_frame.pack_forget()
         self.details_frame.pack_forget()
         self.register_frame.pack()
+
+        self.register_vehicle_frame.register_frame.pack()
 
         # Update or populate Register Vehicle widgets
         # Add widgets and logic specific to Register Vehicle
@@ -71,6 +90,8 @@ class DashboardPage:
         self.dashboard_frame.pack_forget()
         self.register_frame.pack_forget()
         self.details_frame.pack()
+
+        self.vehicle_details_frame.details_frame.pack()
 
         # Update or populate Vehicle Details widgets
         # Add widgets and logic specific to Vehicle Details

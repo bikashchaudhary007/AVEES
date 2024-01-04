@@ -1,5 +1,6 @@
 import tkinter as tk
-from pages.login_page import LoginPage
+# from pages.login_page import LoginPage
+from pages.login_page2 import LoginPage
 
 def run_application():
     root = tk.Tk()
